@@ -7,6 +7,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
+#include <sstream>
 
 const char* const TELLO_STREAM_URL{ "udp://0.0.0.0:11111" };
 
@@ -15,6 +16,12 @@ using cv::imshow;
 using cv::VideoCapture;
 using cv::waitKey;
 using namespace std;
+
+void SendCommandNoAnswer(string msg);
+string SendCommand(string msg);
+
+static WSASession m_session;
+static UDPSocket m_socket;
 
 class Drone
 {
@@ -45,13 +52,13 @@ public:
 
 	int getHeight() const;
 
-	static WSASession m_session;
-	static UDPSocket m_socket;
+	int m_battery;
+	
 
 private:
 
 	int m_speed;
-	int m_battery;
+	
 	int m_height;
 	bool m_flight=false;
 	std::string m_ip = "192.168.10.1";
@@ -83,7 +90,9 @@ Description: Controlls the drone as it had a controller with 4 axes
 ----------------------------------------------------------------------------------------------*/
 void Drone::remoteControll(int fb, int lr, int ud, int cwccw)
 {
-	SendCommandNoAnswer(string("rc %d %d %d %d", &lr, &fb, &ud, &cwccw));
+	string command = "rc ";
+	command = command + to_string(lr) + " " + to_string(fb) + " " + to_string(ud) + " " + to_string(cwccw);
+	SendCommandNoAnswer(command);
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -101,7 +110,9 @@ void Drone::remoteControllEasy(int alpha, int speed)
 	fb = speed * sin(alpha);
 	lr = speed * cos(alpha);
 
-	SendCommandNoAnswer(string("rc %d %d 0 0", &lr, &fb));
+	string command = "rc ";
+	command = command + to_string(lr) + " " + to_string(fb) + " 0 0";
+	SendCommandNoAnswer(command);
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -112,7 +123,9 @@ Parameters:
 ----------------------------------------------------------------------------------------------*/
 void Drone::ascend(int distance)
 {
-	SendCommandNoAnswer(string("up %d", &distance));
+	string command = "up ";
+	command += to_string(distance);
+	SendCommandNoAnswer(command);
 	m_height += distance;
 }
 
@@ -124,7 +137,9 @@ Parameters:
 ----------------------------------------------------------------------------------------------*/
 void Drone::descend(int distance)
 {
-	SendCommandNoAnswer(string("down % d", & distance));
+	string command = "down ";
+	command += to_string(distance);
+	SendCommandNoAnswer(command);
 	m_height -= distance;
 }
 
@@ -140,9 +155,13 @@ void Drone::connect(int Bitrate, string VideoRes)
 {
 	SendCommandNoAnswer(string("command"));
 
-	SendCommandNoAnswer(string("setbitrate %d", &Bitrate));
+	string command = "setbitrate ";
+	command += to_string(Bitrate);
+	SendCommandNoAnswer(command);
 
-	SendCommandNoAnswer(string("setresolution %s", &VideoRes));
+	string command = "setresolution ";
+	command += VideoRes;
+	SendCommandNoAnswer(command);
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -180,6 +199,7 @@ Description: captures and decodes a frame from the drone
 cv::Mat Drone::getVideoStream()
 {
 	SendCommandNoAnswer(string("streamon"));
+	Sleep(10000);
 	VideoCapture capture{ TELLO_STREAM_URL, CAP_FFMPEG };
 	capture >> m_frame;
 	if (!m_frame.empty())
@@ -230,13 +250,13 @@ Description:	send a message to the drone
 string SendCommand(string msg)
 {
 	char buffer[100];
-	Drone::m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
-	sockaddr_in add = Drone::m_socket.RecvFrom(buffer, sizeof(buffer));
+	m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
+	sockaddr_in add = m_socket.RecvFrom(buffer, sizeof(buffer));
 	int i = 0;
 	do {
 		i++;
-		Drone::m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
-		sockaddr_in add = Drone::m_socket.RecvFrom(buffer, sizeof(buffer));
+		m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
+		sockaddr_in add = m_socket.RecvFrom(buffer, sizeof(buffer));
 
 	} while (buffer == "error" && i <= 5);
 
@@ -253,24 +273,33 @@ void SendCommandNoAnswer(string msg)
 {
 	
 	char buffer[100];
-	Drone::m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
-	sockaddr_in add = Drone::m_socket.RecvFrom(buffer, sizeof(buffer));
+	m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
+	sockaddr_in add = m_socket.RecvFrom(buffer, sizeof(buffer));
 	int i = 0;
 	do {
 		i++;
-		Drone::m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
-		sockaddr_in add = Drone::m_socket.RecvFrom(buffer, sizeof(buffer));
+		m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
+		sockaddr_in add = m_socket.RecvFrom(buffer, sizeof(buffer));
 
 	} while (buffer != "ok" && i <= 5);
 }
 
-void main()
+int main()
 {
 	Drone Tello;
+	cout << "trying to connect to drone..." << endl;
 	Tello.connect(0, string ("high"));
-	Sleep(2000);
-	Tello.takeoff();
-	Sleep(10000);
-	Tello.land();
+	cout << "connected" << endl;
+	Tello.getBattery();
+	cout << "battery: " << Tello.m_battery << endl;
+	while (1)
+	{
+		imshow("CTello Stream", Tello.getVideoStream());
+	}
+	//Tello.takeoff();
+	cout << "landing initiated" << endl;
+	//Tello.land();
+	cout << "drone landed" << endl;
+	return 0;
 }
 
