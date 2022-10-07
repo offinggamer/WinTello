@@ -14,7 +14,7 @@ as the name indicates this library can only be used on Windows systems. It is no
 			-cwccw: turning velocity(-100 - 100)
 ![](Images/rccontroll.jpg)
 ##### Description:
-Controlls the drone as it had a controller with 4 axes
+Controlls the drone as it had a controller with 4 axes  
 **NOTE:** The Drone does **NOT** stop moving until a new message get sent!
 
 #### remoteControllEasy
@@ -25,7 +25,7 @@ Controlls the drone as it had a controller with 4 axes
 				-speed: speed of the drone from 1 to 100
 ![](Images/rccontrolleasy.jpg)
 ##### Description:
- Easy controll for the drone
+ Easy controll for the drone  
  **NOTE:** The Drone does **NOT** stop moving until a new message get sent!
 
 #### ascend
