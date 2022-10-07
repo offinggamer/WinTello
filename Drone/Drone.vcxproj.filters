@@ -18,10 +18,16 @@
     <ClCompile Include="Drone.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WinTello.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinTello.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

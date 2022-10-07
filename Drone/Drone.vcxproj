@@ -134,8 +134,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Drone.cpp" />
+    <ClCompile Include="WinTello.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="WinTello.h" />
     <ClInclude Include="Network.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
