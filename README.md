@@ -15,6 +15,7 @@ as the name indicates this library can only be used on Windows systems. It is no
 ![](Images/rccontroll.jpg)
 ##### Description:
 Controlls the drone as it had a controller with 4 axes
+**NOTE:** The Drone does **NOT** stop moving until a new message get sent!
 
 #### remoteControllEasy
 ##### Return Value:
@@ -25,6 +26,7 @@ Controlls the drone as it had a controller with 4 axes
 ![](Images/rccontrolleasy.jpg)
 ##### Description:
  Easy controll for the drone
+ **NOTE:** The Drone does **NOT** stop moving until a new message get sent!
 
 #### ascend
 ##### Return Value:
