@@ -23,6 +23,8 @@ string SendCommand(string msg);
 static WSASession m_session;
 static UDPSocket m_socket;
 
+
+
 class Drone
 {
 public:
@@ -44,13 +46,15 @@ public:
 
 	void land();
 
-	cv::Mat getVideoStream();
-
 	void getSpeed();
 
 	void getBattery();
 
 	int getHeight() const;
+
+	bool isDroneFlying() const;
+
+	void startVideoStream();
 
 	int m_battery;
 	
@@ -63,8 +67,9 @@ private:
 	bool m_flight=false;
 	std::string m_ip = "192.168.10.1";
 	int m_port = 8889;
-	cv::Mat m_frame;
 };
+
+
 
 Drone::Drone()
 {
@@ -77,6 +82,8 @@ Drone::~Drone()
 	SendCommandNoAnswer(string("land"));
 	m_flight = false;
 }
+
+
 
 /*--------------------------------------------------------------------------------------------
 NAME: remoteControll
@@ -92,7 +99,7 @@ void Drone::remoteControll(int fb, int lr, int ud, int cwccw)
 {
 	string command = "rc ";
 	command = command + to_string(lr) + " " + to_string(fb) + " " + to_string(ud) + " " + to_string(cwccw);
-	SendCommandNoAnswer(command);
+	m_socket.SendTo("192.168.10.1", 8889, command.c_str(), command.size());
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -107,12 +114,12 @@ void Drone::remoteControllEasy(int alpha, int speed)
 {
 	int fb;
 	int lr;
-	fb = speed * sin(alpha);
-	lr = speed * cos(alpha);
+	fb = speed * cos(alpha * 3.14159 / 180);
+	lr = speed * sin(alpha * 3.14159 / 180);
 
 	string command = "rc ";
 	command = command + to_string(lr) + " " + to_string(fb) + " 0 0";
-	SendCommandNoAnswer(command);
+	m_socket.SendTo("192.168.10.1", 8889, command.c_str(), command.size());
 }
 
 /*--------------------------------------------------------------------------------------------
@@ -159,7 +166,7 @@ void Drone::connect(int Bitrate, string VideoRes)
 	command += to_string(Bitrate);
 	SendCommandNoAnswer(command);
 
-	string command = "setresolution ";
+	command = "setresolution ";
 	command += VideoRes;
 	SendCommandNoAnswer(command);
 }
@@ -191,23 +198,15 @@ void Drone::land()
 }
 
 /*--------------------------------------------------------------------------------------------
-NAME: getVideoStream
-Return Value: 1 frame
+NAME: startVideoStream
+Return Value: -
 Parameters: -
-Description: captures and decodes a frame from the drone
+Description: starts the udp server on the drone
 ----------------------------------------------------------------------------------------------*/
-cv::Mat Drone::getVideoStream()
+void Drone::startVideoStream()
 {
 	SendCommandNoAnswer(string("streamon"));
-	Sleep(10000);
-	VideoCapture capture{ TELLO_STREAM_URL, CAP_FFMPEG };
-	capture >> m_frame;
-	if (!m_frame.empty())
-	{
-		return m_frame;
-	}
 }
-
 /*--------------------------------------------------------------------------------------------
 NAME: getSpeed
 Return Value: -
@@ -242,6 +241,17 @@ int Drone::getHeight() const
 }
 
 /*--------------------------------------------------------------------------------------------
+NAME: isDroneFlying
+Return Value: bool about the status of the drone(true = flying / false = not flying)
+Parameters: -
+Description: returns wether the drone is in the air or not
+----------------------------------------------------------------------------------------------*/
+bool Drone::isDroneFlying() const
+{
+	return m_flight;
+}
+
+/*--------------------------------------------------------------------------------------------
 NAME: SendCommand
 Return Value:	the answer of the drone
 Parameters:		message in string
@@ -273,33 +283,46 @@ void SendCommandNoAnswer(string msg)
 {
 	
 	char buffer[100];
-	m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
-	sockaddr_in add = m_socket.RecvFrom(buffer, sizeof(buffer));
 	int i = 0;
 	do {
 		i++;
 		m_socket.SendTo("192.168.10.1", 8889, msg.c_str(), msg.size());
 		sockaddr_in add = m_socket.RecvFrom(buffer, sizeof(buffer));
 
-	} while (buffer != "ok" && i <= 5);
+	} while (buffer == "error" && i <= 5);
 }
 
 int main()
 {
+	cv::Mat Frame;
 	Drone Tello;
 	cout << "trying to connect to drone..." << endl;
 	Tello.connect(0, string ("high"));
 	cout << "connected" << endl;
 	Tello.getBattery();
 	cout << "battery: " << Tello.m_battery << endl;
+	Tello.takeoff();
+	Tello.remoteControllEasy(90, 20);
+	Sleep(10000);
+	Tello.remoteControll(0, 0, 0, 0);
+	/*
+	Tello.startVideoStream();
+	VideoCapture Capture{ TELLO_STREAM_URL, CAP_FFMPEG };
 	while (1)
 	{
-		imshow("CTello Stream", Tello.getVideoStream());
+		Capture >> Frame;
+		if (!Frame.empty())
+		{
+			imshow("CTello Stream", Frame);
+		}
+		if (waitKey(1) == 27)
+		{
+			return 0;
+		}
 	}
-	//Tello.takeoff();
-	cout << "landing initiated" << endl;
-	//Tello.land();
-	cout << "drone landed" << endl;
+
+	Tello.land();
+	*/
 	return 0;
 }
 
