@@ -108,15 +108,6 @@ public:
 
 
 	/*--------------------------------------------------------------------------------------------
-	NAME: getBattery
-	Return Value: -
-	Parameters: -
-	Description: Get battery level in % to m_battery
-	----------------------------------------------------------------------------------------------*/
-	void getBattery();
-
-
-	/*--------------------------------------------------------------------------------------------
 	NAME: getHeight
 	Return Value: height of the drone in cm
 	Parameters: -
@@ -148,7 +139,7 @@ public:
 	Parameters: -
 	Description: Get battery %
 	----------------------------------------------------------------------------------------------*/
-	int getBattery() const;
+	int getBattery();
 
 	
 	

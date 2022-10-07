@@ -95,12 +95,6 @@ void Drone::getSpeed()
 }
 
 
-void Drone::getBattery()
-{
-	m_battery = stoi(SendCommand(string("battery?")));
-}
-
-
 int Drone::getHeight() const
 {
 	return m_height;
@@ -112,9 +106,10 @@ bool Drone::isDroneFlying() const
 	return m_flight;
 }
 
-int Drone::getBattery() const
+int Drone::getBattery()
 {
-	return m_battery
+	m_battery = stoi(SendCommand(string("battery?")));
+	return m_battery;
 }
 
 
