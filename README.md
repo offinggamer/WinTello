@@ -73,38 +73,7 @@ Lands the drone
 ##### Description:
 starts the udp server on the drone
 
-#### getSpeed
-##### Return Value:
--
-##### Parameters:
--
-##### Description:
-Get speed in m/s to m_speed
-
-#### getBattery
-##### Return Value:
-Current capacity of the Battery in %
-##### Parameters:
--
-##### Description:
-Get battery %
-
-#### getHeight
-##### Return Value:
-height of the drone in cm
-##### Parameters:
--
-##### Description:
-Get height in cm
-
-#### isDroneFlying
-##### Return Value:
-bool about the status of the drone(true = flying / false = not flying)
-##### Parameters:
--
-##### Description:
-returns wether the drone is in the air or not
-	
+### more methods can be found and decribed in the Drone.h file
 
 ### Examples:
 A Few Examples can be found under the examples folder
