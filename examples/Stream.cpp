@@ -7,6 +7,7 @@ int main()
 	cout << "trying to connect to drone..." << endl;
 	Tello.connect(0, string ("high"));
 	cout << "connected" << endl;
+	Tello.setCameraDirection("Up");
 	Tello.startVideoStream();
 	VideoCapture Capture{ TELLO_STREAM_URL, CAP_FFMPEG };
 	while (1)

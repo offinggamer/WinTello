@@ -121,8 +121,10 @@ bool EDU::setCameraDirection(string direction = "Up")
 	}
 	else if (direction == "Down")
 	{
-		string command = "downvision 1";
-		m_socket.SendTo("192.168.10.1", 8889, command.c_str(), command.size());
+		//string command = "downvision 1";
+		//m_socket.SendTo("192.168.10.1", 8889, command.c_str(), command.size());
+		//printf("downvision");
+		cout << SendCommand(string("downvision 1")) << endl;
 	}
 	else
 	{
