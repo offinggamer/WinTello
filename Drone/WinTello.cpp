@@ -112,6 +112,34 @@ int Drone::getBattery()
 	return m_battery;
 }
 
+bool EDU::cameraDirection(string direction = "Up")
+{
+	if (direction == "Up")
+	{
+		string command = "downvision 0";
+		m_socket.SendTo("192.168.10.1", 8889, command.c_str(), command.size());
+	}
+	else if (direction == "Down")
+	{
+		string command = "downvision 1";
+		m_socket.SendTo("192.168.10.1", 8889, command.c_str(), command.size());
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
+
+Tello::Tello() : Drone()
+{
+
+}
+
+EDU::EDU() : Drone()
+{}
+
 
 string SendCommand(string msg)
 {

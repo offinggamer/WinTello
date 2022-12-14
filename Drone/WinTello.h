@@ -22,11 +22,12 @@ static UDPSocket m_socket;
 
 class Drone
 {
-public:
+protected:
 	Drone();
 
 	~Drone();
 
+public:
 	/*--------------------------------------------------------------------------------------------
 	NAME: remoteControll
 	Return Value: -
@@ -151,6 +152,26 @@ private:
 	bool m_flight = false;
 	std::string m_ip = "192.168.10.1";
 	int m_port = 8889;
+};
+
+class Tello : public Drone
+{
+public:
+	Tello();
+private:
+
+};
+
+class EDU : public Drone
+{
+public:
+	EDU();
+
+	bool cameraDirection(string direction);
+
+private:
+
+
 };
 
 
