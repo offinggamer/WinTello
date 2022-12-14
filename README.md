@@ -73,7 +73,7 @@ Lands the drone
 ##### Description:
 starts the udp server on the drone
 
-### more methods can be found and decribed in the Drone.h file
+### More methods can be found and are decribed in the WinTello.h file
 
 ### Examples:
 A Few Examples can be found under the examples folder
