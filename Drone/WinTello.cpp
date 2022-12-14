@@ -112,7 +112,7 @@ int Drone::getBattery()
 	return m_battery;
 }
 
-bool EDU::cameraDirection(string direction = "Up")
+bool EDU::setCameraDirection(string direction = "Up")
 {
 	if (direction == "Up")
 	{
@@ -133,9 +133,7 @@ bool EDU::cameraDirection(string direction = "Up")
 
 
 Tello::Tello() : Drone()
-{
-
-}
+{}
 
 EDU::EDU() : Drone()
 {}

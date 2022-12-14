@@ -167,7 +167,13 @@ class EDU : public Drone
 public:
 	EDU();
 
-	bool cameraDirection(string direction);
+	/*--------------------------------------------------------------------------------------------
+	NAME: setCameraDirection
+	Return Value: -
+	Parameters: the direction of the camera that should be used (Down/Up)
+	Description: selects the camera for the video stream (downfacing or forward facing camera)
+	----------------------------------------------------------------------------------------------*/
+	bool setCameraDirection(string direction);
 
 private:
 
