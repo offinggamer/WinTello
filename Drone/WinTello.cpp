@@ -1,5 +1,7 @@
 #include "WinTello.h"
 
+
+
 Drone::Drone()
 {
 	m_socket.Bind(m_port);
@@ -94,6 +96,34 @@ void Drone::getSpeed()
 	m_speed = stoi(SendCommand(string("speed?")));
 }
 
+void Drone::flyForward(int speed)
+{
+	string command = "forward ";
+	command += to_string(speed);
+	SendCommandNoAnswer(command);
+}
+
+void Drone::flyBackward(int speed)
+{
+	string command = "back";
+	command += to_string(speed);
+	SendCommandNoAnswer(command);
+}
+
+void Drone::flyRight(int speed)
+{
+	string command = "right";
+	command += to_string(speed);
+	SendCommandNoAnswer(command);
+}
+
+void Drone::flyLeft(int speed)
+{
+	string command = "left";
+	command += to_string(speed);
+	SendCommandNoAnswer(command);
+}
+
 
 int Drone::getHeight() const
 {
@@ -112,8 +142,21 @@ int Drone::getBattery()
 	return m_battery;
 }
 
+int Drone::getDistanceMarkerAndDroneX(int x, float Camera, float objectsize, float realsize)
+{
+	float distance = realsize * Camera * objectsize;
+	return distance / (Camera_Forward * x)
+}
+
+int Drone::getDistanceMarkerAndDroneY(int y, float Camera, float objectsize, float realsize)
+{
+	float distance = realsize * Camera * objectsize;
+	return distance / (Camera_Forward * y)
+}
+
 bool EDU::setCameraDirection(string direction = "Up")
 {
+	m_direction = direction;
 	if (direction == "Up")
 	{
 		string command = "downvision 0";
@@ -133,6 +176,11 @@ bool EDU::setCameraDirection(string direction = "Up")
 	return true;
 }
 
+
+string EDU::getCameraDirection()
+{
+	return m_direction;
+}
 
 Tello::Tello() : Drone()
 {}

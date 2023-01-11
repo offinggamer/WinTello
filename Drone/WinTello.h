@@ -18,6 +18,18 @@ using cv::VideoCapture;
 using cv::waitKey;
 using namespace std;
 
+float camera_matrix_Forward[3][3] = { {936.381996086254, 0, 496.20744875663297}, {0, 940.0142999256417, 317.543016377983}, {0, 0, 1} };
+float dist_coeff_Forward[5] = { 0.02389703394583855, -0.3728288295235468, -0.019945325217444083, 0.00221201435709584, 1.0185154304683173 };
+
+cv::Mat Mat_Camera_Forward(3, 3, CV_32F, camera_matrix_Forward);
+cv::Mat Mat_Dist_Forward(5, 1, CV_32F, camera_matrix_Forward);
+
+float camera_matrix_Downward[3][3] = { {936.381996086254, 0, 496.20744875663297}, {0, 940.0142999256417, 317.543016377983}, {0, 0, 1} };
+float dist_coeff_Downward[5] = { 0.02389703394583855, -0.3728288295235468, -0.019945325217444083, 0.00221201435709584, 1.0185154304683173 };
+
+cv::Mat Mat_Camera_Downward(3, 3, CV_32F, camera_matrix_Downward);
+cv::Mat Mat_Dist_Downward(5, 1, CV_32F, camera_matrix_Downward);
+
 static WSASession m_session;
 static UDPSocket m_socket;
 
@@ -29,6 +41,9 @@ protected:
 	~Drone();
 
 public:
+
+	
+
 	/*--------------------------------------------------------------------------------------------
 	NAME: remoteControll
 	Return Value: -
@@ -143,8 +158,63 @@ public:
 	----------------------------------------------------------------------------------------------*/
 	int getBattery();
 
-	
-	
+	/*--------------------------------------------------------------------------------------------
+	NAME: flyForward
+	Return Value: -
+	Parameters: distance in cm 20 - 500
+	Description: controlls the drone in the forward direction at the given distance
+	----------------------------------------------------------------------------------------------*/
+	void flyForward(int speed);
+
+	/*--------------------------------------------------------------------------------------------
+	NAME: flyBackward
+	Return Value: -
+	Parameters: distance in cm 20 - 500
+	Description: controlls the drone in the forward direction at the given distance
+	----------------------------------------------------------------------------------------------*/
+	void flyBackward(int speed);
+
+	/*--------------------------------------------------------------------------------------------
+	NAME: flyRight
+	Return Value: -
+	Parameters: distance in cm 20 - 500
+	Description: controlls the drone in the forward direction at the given distance
+	----------------------------------------------------------------------------------------------*/
+	void flyRight(int speed);
+
+	/*--------------------------------------------------------------------------------------------
+	NAME: flyLeft
+	Return Value: -
+	Parameters: distance in cm 20 - 500
+	Description: controlls the drone in the forward direction at the given distance
+	----------------------------------------------------------------------------------------------*/
+	void flyLeft(int speed);
+
+	/*--------------------------------------------------------------------------------------------
+	NAME: getDistanceMarkerAndDrone
+	Return Value: The Estimated Distance between the Drone and the Marker on the x axis
+	Parameters: 
+				- x: the distance between the center of the marker and the center of the picture on the x axis in px
+				- distance: distance between marker and drone in cm
+	Description: controlls the drone to the marker on the horizontal plane
+	----------------------------------------------------------------------------------------------*/
+	int getDistanceMarkerAndDroneX(int x, float Camera, float objectsize, float realsize);
+
+	/*--------------------------------------------------------------------------------------------
+	NAME: getDistanceMarkerAndDrone
+	Return Value: The Estimated Distance between the Drone and the Marker on the y axis
+	Parameters:
+				- y: the distance between the center of the marker and the center of the picture on the y axis in px
+				- distance: distance between marker and drone in cm
+	Description: controlls the drone to the marker on the vertical plane
+	----------------------------------------------------------------------------------------------*/
+	int getDistanceMarkerAndDroneY(int x, float Camera, float objectsize, float realsize);
+
+	const float Camera_Forward = Mat_Camera_Forward.at<double>(0, 0) * 0.5;
+	const float Camera_Downward = Mat_Camera_Downward.at<double>(0, 0) * 0.5;
+
+protected:
+
 private:
 
 	int m_speed;
@@ -159,6 +229,8 @@ class Tello : public Drone
 {
 public:
 	Tello();
+
+
 private:
 
 };
@@ -176,8 +248,10 @@ public:
 	----------------------------------------------------------------------------------------------*/
 	bool setCameraDirection(string direction);
 
-private:
+	string getCameraDirection();
 
+private:
+	string m_direction;
 
 };
 
@@ -198,3 +272,6 @@ Parameters:		message in string
 Description:	send a message to the drone
 ----------------------------------------------------------------------------------------------*/
 string SendCommand(string msg);
+
+
+
