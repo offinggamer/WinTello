@@ -145,13 +145,13 @@ int Drone::getBattery()
 int Drone::getDistanceMarkerAndDroneX(int x, float Camera, float objectsize, float realsize)
 {
 	float distance = realsize * Camera * objectsize;
-	return distance / (Camera_Forward * x)
+	return distance / (Camera_Forward * x);
 }
 
 int Drone::getDistanceMarkerAndDroneY(int y, float Camera, float objectsize, float realsize)
 {
 	float distance = realsize * Camera * objectsize;
-	return distance / (Camera_Forward * y)
+	return distance / (Camera_Forward * y);
 }
 
 bool EDU::setCameraDirection(string direction = "Up")
